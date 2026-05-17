@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catch_async";
+import { routeParam } from "../../../shared/route_param";
 import { getToken } from "../../middleware/token";
 import sendResponse from "../../../shared/send_response";
 import { BookmarkService } from "./bookmark.service";
 
 const toggleBookmark = catchAsync(async (req: Request, res: Response) => {
-  const { storyId } = req.params;
+  const storyId = routeParam(req.params.storyId);
   const token = await getToken(req);
   const result = await BookmarkService.toggleBookmark(storyId, token);
   
@@ -34,7 +35,7 @@ const getBookmarks = catchAsync(async (req: Request, res: Response) => {
 });
 
 const checkBookmarkStatus = catchAsync(async (req: Request, res: Response) => {
-  const { storyId } = req.params;
+  const storyId = routeParam(req.params.storyId);
   const token = await getToken(req);
   const result = await BookmarkService.checkBookmarkStatus(storyId, token);
 
@@ -47,7 +48,7 @@ const checkBookmarkStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteBookmark = catchAsync(async (req: Request, res: Response) => {
-  const { storyId } = req.params;
+  const storyId = routeParam(req.params.storyId);
   const token = await getToken(req);
   const result = await BookmarkService.deleteBookmark(storyId, token);
 
