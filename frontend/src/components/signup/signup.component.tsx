@@ -4,7 +4,10 @@ import SSButton from "../ui-component/ss-button/ss-button";
 import { useState } from "react";
 import { storeUserInfo } from "../../services/auth.service";
 import toast, { Toaster } from "react-hot-toast";
-import { useEmailVerifyMutation } from "../../redux/apis/otp.verify.api";
+import {
+  useEmailVerifyMutation,
+  useVerifyOtpMutation,
+} from "../../redux/apis/otp.verify.api";
 import { useRegisterUserMutation } from "../../redux/apis/auth.api";
 import { useNavigate } from "react-router-dom";
 
@@ -22,13 +25,13 @@ interface Inputs extends IRegisterInfo {
 const SignUpComponent = () => {
   const navigate = useNavigate();
   const [emailVerify] = useEmailVerifyMutation();
+  const [verifyOtp] = useVerifyOtpMutation();
   const [registerUser] = useRegisterUserMutation();
   const { register, handleSubmit, watch } = useForm<Inputs>();
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [showOtpField, setShowOtpField] = useState<boolean>(false);
   const [registerInfo, setRegisterInfo] = useState<IRegisterInfo>();
   const [expiredAt, setExpiredAt] = useState(0);
-  const [serverOtp, setServerOtp] = useState<string | null>(null);
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
@@ -52,15 +55,18 @@ const SignUpComponent = () => {
       setIsBusy(true);
       try {
         const res = await emailVerify({ ...otpPayload }).unwrap();
-        if (res) {
-          const { otp, expiresAt } = res;
-          setServerOtp(otp);
+        if (res?.data) {
+          const { expiresAt } = res.data;
           setExpiredAt(expiresAt);
           toast.success("OTP sent to your email");
           setRegisterInfo(user);
           setShowOtpField(true);
         }
       } catch (error) {
+        const message =
+          (error as { data?: Array<{ message?: string }> })?.data?.[0]?.message ||
+          "Failed to send OTP. Check backend .env email credentials.";
+        toast.error(message);
         console.log("error: ", error);
       } finally {
         setIsBusy(false);
@@ -69,24 +75,22 @@ const SignUpComponent = () => {
   };
 
   const handleOtpValidation = async () => {
-    if (!otp) {
+    const enteredOtp = otp?.trim();
+    if (!enteredOtp) {
       toast.error("Please enter OTP");
-      return;
-    }
-    if (Date.now() > expiredAt) {
-      toast.error("OTP expired. Please request a new one.");
-      return;
-    }
-    if (otp !== serverOtp) {
-      toast.error("Invalid OTP. Please try again.");
       return;
     }
     if (!registerInfo) {
       toast.error("Something went wrong. Please restart the process.");
       return;
     }
+    if (Date.now() > expiredAt) {
+      toast.error("OTP expired. Please request a new one.");
+      return;
+    }
     setIsBusy(true);
     try {
+      await verifyOtp({ email: registerInfo.email, otp: enteredOtp }).unwrap();
       const res = await registerUser({ ...registerInfo }).unwrap();
       if (res.data.accessToken) {
         toast.success("OTP validated successfully!");
@@ -94,6 +98,10 @@ const SignUpComponent = () => {
         navigate("/");
       }
     } catch (err: unknown) {
+      const message =
+        (err as { data?: Array<{ message?: string }> })?.data?.[0]?.message ||
+        "OTP verification failed. Please check the code and try again.";
+      toast.error(message);
       console.log("error: ", err);
     } finally {
       setIsBusy(false);

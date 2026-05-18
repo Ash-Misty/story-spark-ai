@@ -1,7 +1,9 @@
 import nodemailer from "nodemailer";
 import { IEmailBody } from "./verify_email.interface";
+import { IVerifyOtpBody } from "./verify_email.interface";
 import ApiError from "../../../errors/api_error";
 import config from "../../../config";
+import httpStatus from "http-status";
 
 interface OTPStore {
   [email: string]: { otp: string; expiresAt: number };
@@ -19,6 +21,13 @@ const transporter = nodemailer.createTransport({
 
 const VerifyEmail = async (payload: IEmailBody) => {
   try {
+    if (!config.verify_email || !config.verify_password) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Email verification credentials are missing. Set VERIFY_EMAIL and VERIFY_PASSWORD in backend/.env."
+      );
+    }
+
     const { email, name } = payload;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000;
@@ -73,12 +82,50 @@ const VerifyEmail = async (payload: IEmailBody) => {
       `,
     };
     await transporter.sendMail(mailOptions);
-    return { otp, expiresAt };
+
+    return {
+      expiresAt,
+    };
   } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new ApiError(500, "Failed to send email");
   }
 };
 
+const VerifyOtp = async (payload: IVerifyOtpBody) => {
+  const { email, otp } = payload;
+  const storedOtp = otpStore[email];
+
+  if (!storedOtp) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      "OTP not found or expired. Please request a new one."
+    );
+  }
+
+  if (Date.now() > storedOtp.expiresAt) {
+    delete otpStore[email];
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "OTP expired. Please request a new one."
+    );
+  }
+
+  if (storedOtp.otp !== otp.trim()) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Invalid OTP. Please try again."
+    );
+  }
+
+  delete otpStore[email];
+
+  return { verified: true };
+};
+
 export const VerifyEmailService = {
   VerifyEmail,
+  VerifyOtp,
 };

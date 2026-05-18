@@ -4,5 +4,6 @@ const router = express.Router();
 
 // Verify email
 router.post("/verify-email", VerifyEmailController.VerifyEmail);
+router.post("/verify-otp", VerifyEmailController.VerifyOtp);
 
 export const VerifyEmailRouter = router;
