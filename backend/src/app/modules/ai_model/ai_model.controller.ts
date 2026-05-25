@@ -43,21 +43,19 @@ const aiFreeModelGenerate = catchAsync(async (req: Request, res: Response) => {
     res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
   }
 
-  const guard = createGuestQuotaGuard(userId);
-  await reserveGuestQuota(userId);
-
-  await runWithQuotaCleanup(guard, async () => {
     const result = await AiModelService.aiFreeModelGenerate(prompt);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Story generated successfully!",
       data: result,
-    });
   });
 });
 
 export const AiModelController = {
   aiModelGenerate,
   aiFreeModelGenerate,
+  aiModelAlternateEndings,
+  aiFreeModelAlternateEndings,
 };
+

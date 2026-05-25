@@ -1,16 +1,9 @@
 import ApiError from "../../../errors/api_error";
 import { ITokenPayload } from "../../../interfaces/token";
-import {
-  GenerationTimeoutError,
-  raceGenerationWithTimeout,
-} from "../../../utils/generation_timeout";
-import { IAIModel } from "./ai_model.interface";
-import { generateWithGeminiStories } from "./ai_model.utils";
-import { assertSuccessfulGeneration } from "./quota.lifecycle";
-import httpStatus from "http-status";
 
-const AUTHENTICATED_GENERATION_TIMEOUT_MS = 60000;
-const FREE_GENERATION_TIMEOUT_MS = 10000;
+import httpStatus from "http-status";
+import { REQUEST_LIMITS } from "../../../interfaces/ai_model_request_limit";
+
 
 const GENERATION_FAILED_MESSAGE =
   "Story generation failed. Your request quota has been restored.";
@@ -39,15 +32,6 @@ const aiModelGenerate = async (payload: IAIModel, token: ITokenPayload) => {
   }
 };
 
-const aiFreeModelGenerate = async (payload: IAIModel) => {
-  const { prompt } = payload;
-
-  try {
-    const result = await raceGenerationWithTimeout(
-      (signal) => generateWithGeminiStories(prompt, 150, 2, signal),
-      FREE_GENERATION_TIMEOUT_MS
-    );
-    assertSuccessfulGeneration(result, FREE_GENERATION_FAILED_MESSAGE);
     return result;
   } catch (error) {
     if (error instanceof ApiError) {
@@ -63,4 +47,7 @@ const aiFreeModelGenerate = async (payload: IAIModel) => {
 export const AiModelService = {
   aiModelGenerate,
   aiFreeModelGenerate,
+  aiModelAlternateEndings,
+  aiFreeModelAlternateEndings,
 };
+

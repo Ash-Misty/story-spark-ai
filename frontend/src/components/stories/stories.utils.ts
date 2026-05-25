@@ -35,46 +35,41 @@ export const doPublishAccessibility = (subscriptionType: string) => {
   }
 };
 
-export interface ITopicData {
-  title: string;
-  color: string;
-  selected: boolean;
-}
+export const SELECTED_TOPIC_CLASSES = "bg-indigo-100 text-indigo-800";
+export const UNSELECTED_TOPIC_CLASSES = "bg-slate-700 text-slate-300";
 
-export const topicsData: ITopicData[] = [
-  {
-    title: "#AIWriting",
-    color: "bg-indigo-100 text-indigo-800",
     selected: true,
   },
   {
     title: "#StoryGeneration",
     color: "bg-purple-100 text-purple-800",
+
     selected: true,
   },
   {
     title: "#Writing",
     color: "bg-blue-100 text-blue-800",
+
     selected: false,
   },
   {
     title: "#Creativity",
-    color: "bg-pink-100 text-pink-800",
+
     selected: false,
   },
   {
     title: "#DigitalMarketing",
-    color: "bg-emerald-100 text-emerald-800",
+
     selected: false,
   },
   {
     title: "#Storytelling",
-    color: "bg-amber-100 text-amber-800",
+
     selected: false,
   },
   {
     title: "#Productivity",
-    color: "bg-cyan-100 text-cyan-800",
+
     selected: false,
   },
 ];

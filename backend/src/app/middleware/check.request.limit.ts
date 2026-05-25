@@ -7,6 +7,9 @@ import { Secret } from "jsonwebtoken";
 import { reserveUserQuota } from "../modules/ai_model/quota.service";
 import { createUserQuotaGuard } from "../modules/ai_model/quota.lifecycle";
 
+// Note: Actual quota/limit enforcement was moved to the ai_model.service layer 
+// to allow for atomic MongoDB operations and rollback on failure.
+// This middleware now only ensures the user is authenticated and exists.
 const checkRequestLimit =
   () => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -23,10 +26,6 @@ const checkRequestLimit =
       );
       const { email: userEmail } = verifiedUser;
 
-      await reserveUserQuota(userEmail);
-
-      res.locals.quotaUserEmail = userEmail;
-      res.locals.quotaRefundGuard = createUserQuotaGuard(userEmail);
       next();
     } catch (err) {
       next(err);
