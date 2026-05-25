@@ -40,6 +40,7 @@ import CareerComponent from "./components/footer/career.tsx";
 // import ContactUsComponent from "./components/footer/contact-us.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
 import PrivacyPolicy from "./components/footer/Privacy.tsx";
+import Terms from "./components/footer/terms.tsx";
 // import HelpCenterComponent from "./components/footer/help-center.tsx";
 import GuidelinesComponent from "./components/footer/guidelines.tsx";
 import TemplatesComponent from "./components/templates/templates.component";
@@ -361,6 +362,14 @@ function App() {
           </RootLayout>
         }
       />
+        <Route
+          path="/terms"
+          element={
+            <RootLayout>
+              <Terms />
+            </RootLayout>
+          }
+        />
         <Route
           path="/help-center"
           element={
