@@ -35,14 +35,15 @@ export const getUserInfo = () => {
   }
   return null;
 };
-
 export const isLoggedIn = () => {
   const authToken = getFromLocalStorage(AUTH_KEY);
+
   if (!authToken) return false;
+
   try {
     const decoded = decodedToken(authToken);
-    return typeof decoded?.exp === "number" && decoded.exp > Date.now() / 1000;
-  } catch {
+    return decoded?.exp ? decoded.exp > Date.now() / 1000 : false;
+  } catch  {
     return false;
   }
 };

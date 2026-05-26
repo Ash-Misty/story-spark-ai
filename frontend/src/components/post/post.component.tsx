@@ -32,6 +32,10 @@ const ExploreComponent = () => {
     query["searchTerm"] = debounceTerm;
   }
 
+  if (selectedTags.length > 0) {
+    query["genres"] = selectedTags.join(",");
+  }
+
   const { data, isLoading } = useGetPostListsQuery({ ...query });
 
   const filteredPosts =
@@ -111,6 +115,8 @@ const ExploreComponent = () => {
         {/* Main Layout */}
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
+
+
           <div className="w-full md:w-64 flex-shrink-0">
             <div className="sticky top-4 bg-gray-50 border border-gray-200 text-slate-900 backdrop-blur-xl rounded-2xl p-6 shadow-xl z-10 transition-colors duration-300 dark:bg-slate-900/50 dark:border-none dark:text-white">
               <div className="flex justify-between items-center mb-4">
@@ -129,6 +135,11 @@ const ExploreComponent = () => {
               <div className="space-y-6">
                 {/* Genres */}
                 <div>
+
+
+                 
+
+                    
                   <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">
                     Genres
                   </h4>
@@ -136,12 +147,16 @@ const ExploreComponent = () => {
                   <div className="space-y-2">
                     {availableGenres.map((genre) => (
                       <label key={genre} className="flex items-center">
+
+  
+
                         <input
                           type="checkbox"
                           className="rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500 cursor-pointer transition-all dark:border-slate-600 dark:bg-slate-700/50 dark:text-blue-500"
                           checked={selectedTags.includes(genre.toLowerCase())}
                           onChange={() => handleTagClick(genre.toLowerCase())}
                         />
+
 
                         <span className="ml-3 text-sm text-slate-600 cursor-pointer hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-slate-300">
                           {genre}
@@ -176,7 +191,7 @@ const ExploreComponent = () => {
 
                 {/* Sort */}
                 <div>
-                  <h4 className="font-semibold mb-3 text-slate-300">Sort By</h4>
+                  <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Sort By</h4>
 
                   <select
                     value={sortBy}
@@ -195,7 +210,7 @@ const ExploreComponent = () => {
 
                 {/* Order */}
                 <div>
-                  <h4 className="font-semibold mb-3 text-slate-300">Order</h4>
+                  <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Order</h4>
 
                   <select
                     value={sortOrder}
@@ -298,6 +313,7 @@ const ExploreComponent = () => {
             </div>
 
             {!featuredPost && data?.meta && (
+
               <div className="sticky bottom-0 bg-white/90 backdrop-blur-xl border-t border-gray-200 z-20 mt-8 shadow-[0_-10px_40px_-10px_rgba(15,23,42,0.12)] transition-colors duration-300 dark:bg-[#0b1329]/80 dark:border-slate-800 dark:shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.5)]">
                 <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                   <PaginationComponent
