@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import type { ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -39,7 +40,14 @@ const features = [
   }
 ];
 
-const FeatureCard = ({ feature }: { feature: any }) => {
+type Feature = {
+  title: string;
+  description: string;
+  bgClass: string;
+  icon: ReactNode;
+};
+
+const FeatureCard = ({ feature }: { feature: Feature }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 

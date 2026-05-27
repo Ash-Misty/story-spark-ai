@@ -8,7 +8,13 @@ interface Props {
   onClose: () => void;
 }
 
-interface SimNode extends IStoryNode, d3.SimulationNodeDatum {}
+interface SimNode extends IStoryNode, d3.SimulationNodeDatum {
+  x?: number;
+  y?: number;
+  fx?: number | null;
+  fy?: number | null;
+}
+
 interface SimLink extends d3.SimulationLinkDatum<SimNode> {
   source: SimNode | string;
   target: SimNode | string;
@@ -53,8 +59,8 @@ export default function StoryWorldMap({ story, title, onClose }: Props) {
 
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
-      .on("zoom", (event) => {
-        container.attr("transform", event.transform);
+      .on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        container.attr("transform", event.transform.toString());
       });
     svg.call(zoom);
 
@@ -63,7 +69,7 @@ export default function StoryWorldMap({ story, title, onClose }: Props) {
 
     const simulation = d3.forceSimulation<SimNode>(simNodes)
       .force("link", d3.forceLink<SimNode, SimLink>(simLinks)
-        .id(d => d.id)
+        .id((d: SimNode) => d.id)
         .distance(120))
       .force("charge", d3.forceManyBody().strength(-400))
       .force("center", d3.forceCenter(width / 2, height / 2))
@@ -84,48 +90,48 @@ export default function StoryWorldMap({ story, title, onClose }: Props) {
       .style("cursor", "pointer")
       .call(
         d3.drag<SVGGElement, SimNode>()
-          .on("start", (event, d) => {
+          .on("start", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x; d.fy = d.y;
           })
-          .on("drag", (event, d) => {
+          .on("drag", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
             d.fx = event.x; d.fy = event.y;
           })
-          .on("end", (event, d) => {
+          .on("end", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
             if (!event.active) simulation.alphaTarget(0);
             d.fx = null; d.fy = null;
           })
       );
 
     node.append("circle")
-      .attr("r", d => d.type === "location" ? 28 : 20)
-      .attr("fill", d => d.type === "location"
+      .attr("r", (d: SimNode) => d.type === "location" ? 28 : 20)
+      .attr("fill", (d: SimNode) => d.type === "location"
         ? "rgba(99,102,241,0.2)"
         : "rgba(236,72,153,0.2)")
-      .attr("stroke", d => d.type === "location" ? "#6366f1" : "#ec4899")
+      .attr("stroke", (d: SimNode) => d.type === "location" ? "#6366f1" : "#ec4899")
       .attr("stroke-width", 2);
 
     node.append("text")
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
-      .attr("font-size", d => d.type === "location" ? "18px" : "14px")
-      .text(d => d.type === "location" ? "📍" : "👤");
+      .attr("font-size", (d: SimNode) => d.type === "location" ? "18px" : "14px")
+      .text((d: SimNode) => d.type === "location" ? "📍" : "👤");
 
     node.append("text")
       .attr("text-anchor", "middle")
-      .attr("y", d => d.type === "location" ? 40 : 32)
-      .attr("fill", d => d.type === "location" ? "#a5b4fc" : "#f9a8d4")
+      .attr("y", (d: SimNode) => d.type === "location" ? 40 : 32)
+      .attr("fill", (d: SimNode) => d.type === "location" ? "#a5b4fc" : "#f9a8d4")
       .attr("font-size", "11px")
       .attr("font-weight", "600")
-      .text(d => d.name);
+      .text((d: SimNode) => d.name);
 
     simulation.on("tick", () => {
       link
-        .attr("x1", d => (d.source as SimNode).x || 0)
-        .attr("y1", d => (d.source as SimNode).y || 0)
-        .attr("x2", d => (d.target as SimNode).x || 0)
-        .attr("y2", d => (d.target as SimNode).y || 0);
-      node.attr("transform", d => `translate(${d.x || 0},${d.y || 0})`);
+        .attr("x1", (d: SimLink) => (typeof d.source === "string" ? 0 : d.source.x ?? 0))
+        .attr("y1", (d: SimLink) => (typeof d.source === "string" ? 0 : d.source.y ?? 0))
+        .attr("x2", (d: SimLink) => (typeof d.target === "string" ? 0 : d.target.x ?? 0))
+        .attr("y2", (d: SimLink) => (typeof d.target === "string" ? 0 : d.target.y ?? 0));
+      node.attr("transform", (d: SimNode) => `translate(${d.x || 0},${d.y || 0})`);
     });
 
     return () => { simulation.stop(); };

@@ -41,7 +41,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
+    } catch {
       toast.error(
         "Login failed. Please check your credentials."
       );
@@ -71,7 +71,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
+    } catch {
       toast.error(
         "Failed to login with Google. Please try again."
       );

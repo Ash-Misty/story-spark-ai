@@ -191,8 +191,10 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   }, [topics]);
 
   useEffect(() => {
+    const player = audioPlayerRef.current;
+
     return () => {
-      audioPlayerRef.current?.stop();
+      player?.stop();
     };
   }, [location.pathname]);
 

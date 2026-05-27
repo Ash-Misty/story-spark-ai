@@ -33,7 +33,8 @@ const GithubcontributorsComponent : React.FC = () =>{
         setGitHubContributors(data);
     
       
-      }catch{
+      }catch(error){
+        console.error("Failed to load GitHub contributors", error);
       }
         
     };
