@@ -381,7 +381,7 @@ const StoriesComponent = () => {
     register("prompt").ref(el);
     inputRef.current = el;
   }}
-        className={`w-full h-32 sm:h-40 resize-none border-none outline-none bg-transparent text-gray-300 focus:ring-0 text-lg leading-relaxed tracking-wide placeholder:italic placeholder:text-gray-500 pr-10 transition-colors duration-200 ${
+        className={`w-full h-32 sm:h-40 resize-none border-none outline-none bg-transparent text-gray-800 dark:text-gray-200 focus:ring-0 text-lg leading-relaxed tracking-wide placeholder:italic placeholder:text-gray-500 dark:placeholder:text-gray-400 pr-10 transition-colors duration-200 ${
           isOverLimit
             ? "ring-1 ring-red-500 rounded"
             : isNearLimit
