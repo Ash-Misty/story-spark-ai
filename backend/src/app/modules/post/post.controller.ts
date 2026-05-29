@@ -101,6 +101,19 @@ const toggleBookmark = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updatePost = catchAsync(async (req: Request, res: Response) => {
+  const id = routeParam(req.params.id);
+  const postData = req.body;
+  const token = await getToken(req);
+  const result = await PostService.updatePost(id, postData, token);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Post updated successfully!",
+    data: result,
+  });
+});
+
 const deletePost = catchAsync(async (req: Request, res: Response) => {
   const id = routeParam(req.params.id);
   const token = await getToken(req);
@@ -156,7 +169,9 @@ export const PostController = {
   getSinglePost,
   getPostsByTag,
   toggleBookmark,
+  updatePost,
   deletePost,
   remixStory,       // Exposed remix utility route hook
   translateStory,   // Exposed translation engine route hook
 };
+
