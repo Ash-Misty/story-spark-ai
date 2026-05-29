@@ -36,6 +36,33 @@ const StoriesComponent = () => {
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [selectedLength, setSelectedLength] = useState<string>("medium");
   const [textareaValue, setTextareaValue] = useState<string>("");
+  const storyTemplates= [
+  {
+    title: "Fantasy Adventure",
+    prompt:
+      "In a kingdom ruled by dragons, a young warrior discovers an ancient secret that could change the fate of the world.",
+  },
+  {
+    title: "Sci-Fi Mystery",
+    prompt:
+      "In the year 2099, a detective uncovers a conspiracy involving artificial intelligence and missing memories.",
+  },
+  {
+    title: "Horror Story",
+    prompt:
+      "A group of friends enters an abandoned mansion, only to realize they are not alone.",
+  },
+  {
+    title: "Romance",
+    prompt:
+      "Two strangers meet during a train journey and slowly discover a connection that changes their lives forever.",
+  },
+  {
+    title: "Thriller",
+    prompt:
+      "A journalist receives an anonymous message exposing a dangerous secret hidden by powerful people.",
+  },
+];
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -308,33 +335,55 @@ const StoriesComponent = () => {
         </button>
       ))}
     </div>
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold mb-3">
+        Story Templates
+      </h3>
 
-    <div className="relative">
-      <textarea
-  {...register("prompt")}
-  ref={(el) => {
-    register("prompt").ref(el);
-    inputRef.current = el;
-  }}
-        className={`w-full h-32 sm:h-40 resize-none border-none outline-none bg-transparent text-gray-300 focus:ring-0 text-lg leading-relaxed tracking-wide placeholder:italic placeholder:text-gray-500 pr-10 transition-colors duration-200 ${
-          isOverLimit
-            ? "ring-1 ring-red-500 rounded"
-            : isNearLimit
-            ? "ring-1 ring-yellow-400 rounded"
-            : ""
-        }`}
-        placeholder="Every great story begins with a single idea. What's yours?"
-        value={textareaValue}
-        maxLength={MAX_PROMPT_LENGTH}
-        onChange={(e) => setTextareaValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            const form = e.currentTarget.closest("form");
-            if (form) form.requestSubmit();
-          }
-        }}
-        />
+    <div className="flex flex-wrap gap-2">
+      {storyTemplates.map((template) => (
+      <button
+        key={template.title}
+        type="button"
+        onClick={() => setTextareaValue(template.prompt)}
+        className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 transition-colors text-sm font-medium"
+      >
+        {template.title}
+      </button>
+    ))}
+  </div>
+</div>
+
+<div className="relative">
+  <textarea
+    {...register("prompt")}
+    ref={(el) => {
+      register("prompt").ref(el);
+      inputRef.current = el;
+    }}
+    onInput={(e) => {
+      e.currentTarget.style.height = "auto";
+      e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+    }}
+    className={`w-full min-h-[140px] max-h-[400px] overflow-y-auto resize-none border-none outline-none bg-transparent text-gray-300 focus:ring-2 focus:ring-indigo-500/40 text-lg leading-relaxed tracking-wide placeholder:italic placeholder:text-gray-500 pr-10 transition-colors duration-200 ${
+      isOverLimit
+        ? "ring-1 ring-red-500 rounded"
+        : isNearLimit
+        ? "ring-1 ring-yellow-400 rounded"
+        : ""
+    }`}
+    placeholder="Every great story begins with a single idea. What's yours?"
+    value={textareaValue}
+    maxLength={MAX_PROMPT_LENGTH}
+    onChange={(e) => setTextareaValue(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        const form = e.currentTarget.closest("form");
+        if (form) form.requestSubmit();
+      }
+    }}
+  />
 
       {textareaValue.length > 0 && (
         <button
