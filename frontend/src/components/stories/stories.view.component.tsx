@@ -4,6 +4,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/post.api";
 import { useGetProfileInfoQuery } from "../../redux/apis/user.api";
 import jsPDF from "jspdf";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 import StoryWorldMap from "../story-map/StoryWorldMap";
 import StoryRemix from "../remix/StoryRemix";
 import StoryTranslator from "../translate/StoryTranslator";
@@ -546,6 +549,152 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     } catch (error) { console.error(error); toast.error("Failed to export Markdown."); }
   };
 
+  const handleExportDOCX = async () => {
+    if (!selectedStory) { toast.error("No story available to export."); return; }
+    const toastId = toast.loading("Preparing your DOCX...");
+    try {
+      const title = selectedStory.title || "Story";
+      const content = selectedStory.content || "";
+      const tag = (selectedStory.tag || "STORY").toUpperCase();
+      const author = isLogin && profile?.name ? profile.name : "Anonymous";
+
+      const doc = new Document({
+        sections: [
+          {
+            properties: {},
+            children: [
+              new Paragraph({
+                text: title,
+                heading: HeadingLevel.HEADING_1,
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 400 },
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `Genre: ${tag}`, bold: true, color: "6366f1" }),
+                  new TextRun({ text: ` | Author: ${author}`, italic: true }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 600 },
+              }),
+              ...content.split("\n").map(para => {
+                const trimmed = para.trim();
+                if (!trimmed) return null;
+                return new Paragraph({
+                  children: [new TextRun(trimmed)],
+                  spacing: { after: 200, line: 360 },
+                });
+              }).filter(Boolean) as Paragraph[],
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: "\nGenerated with StorySparkAI",
+                    color: "94a3b8",
+                    size: 16,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 1000 },
+              }),
+            ],
+          },
+        ],
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "story"}.docx`);
+      toast.success("DOCX downloaded!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export DOCX.");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+
+  const handleExportTXT = () => {
+    if (!selectedStory) { toast.error("No story available to export."); return; }
+    try {
+      const title = selectedStory.title || "Story";
+      const content = selectedStory.content || "";
+      const author = isLogin && profile?.name ? profile.name : "Anonymous";
+      const date = new Date().toLocaleDateString();
+      
+      const textContent = `${title}\n\nAuthor: ${author}\nDate: ${date}\nGenre: ${selectedStory.tag}\n\n${content}\n\nGenerated with StorySparkAI`;
+      const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+      saveAs(blob, `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "story"}.txt`);
+      toast.success("Plain Text downloaded!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export TXT.");
+    }
+  };
+
+  const handleExportEPUB = async () => {
+    if (!selectedStory) { toast.error("No story available to export."); return; }
+    const toastId = toast.loading("Generating your EPUB...");
+    try {
+      const zip = new JSZip();
+      const title = selectedStory.title || "Story";
+      const content = selectedStory.content || "";
+      const author = isLogin && profile?.name ? profile.name : "Anonymous";
+      const uuid = selectedStory.uuid || Math.random().toString(36).substring(7);
+
+      zip.file("mimetype", "application/epub+zip");
+      zip.folder("META-INF")?.file("container.xml", 
+        `<?xml version="1.0"?>
+        <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+          <rootfiles>
+            <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+          </rootfiles>
+        </container>`);
+
+      zip.folder("OEBPS")?.file("content.opf", 
+        `<?xml version="1.0" encoding="UTF-8"?>
+        <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="2.0">
+          <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+            <dc:title>${title}</dc:title>
+            <dc:creator opf:role="aut">${author}</dc:creator>
+            <dc:language>en</dc:language>
+            <dc:identifier id="BookID">urn:uuid:${uuid}</dc:identifier>
+          </metadata>
+          <manifest>
+            <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+            <item id="content" href="content.html" media-type="application/xhtml+xml"/>
+          </manifest>
+          <spine toc="ncx">
+            <itemref idref="content"/>
+          </spine>
+        </package>`);
+
+      zip.folder("OEBPS")?.file("toc.ncx", 
+        `<?xml version="1.0" encoding="UTF-8"?>
+        <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+          <head><meta name="dtb:uid" content="urn:uuid:${uuid}"/><meta name="dtb:depth" content="1"/></head>
+          <docTitle><text>${title}</text></docTitle>
+          <navMap><navPoint id="navpoint-1" playOrder="1"><navLabel><text>Start Reading</text></navLabel><content src="content.html"/></navPoint></navMap>
+        </ncx>`);
+
+      const htmlBody = content.split('\n').filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join('\n');
+      zip.folder("OEBPS")?.file("content.html", 
+        `<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+          <head><title>${title}</title><style>body { font-family: serif; padding: 20px; line-height: 1.5; } h1 { text-align: center; color: #333; } p { margin-bottom: 1em; text-indent: 1em; }</style></head>
+          <body><h1>${title}</h1>${htmlBody}</body>
+        </html>`);
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      saveAs(blob, `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.epub`);
+      toast.success("EPUB downloaded!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export EPUB.");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+
   const handelPublishStory = async () => {
     if (!isLogin) { toast.error("Please login to publish the story."); return; }
     if (!selectedStory) { toast.error("No story available. Please generate a story first."); return; }
@@ -656,6 +805,15 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 </button>
                 <button type="button" className="rounded-lg px-4 py-2 bg-indigo-700 text-slate-200 font-semibold cursor-pointer hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleExportMarkdown} disabled={!selectedStory}>
                   ⬇️ Export Markdown
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-sky-700 text-slate-200 font-semibold cursor-pointer hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleExportDOCX} disabled={!selectedStory}>
+                  📝 Export Word
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-slate-700 text-slate-200 font-semibold cursor-pointer hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleExportTXT} disabled={!selectedStory}>
+                  📄 Export TXT
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-amber-700 text-slate-200 font-semibold cursor-pointer hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleExportEPUB} disabled={!selectedStory}>
+                  📚 Export EPUB
                 </button>
                 <button type="button" className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowWorldMap(true)} disabled={!selectedStory}>
                   🗺️ World Map
