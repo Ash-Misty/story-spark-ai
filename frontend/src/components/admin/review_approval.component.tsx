@@ -1,3 +1,4 @@
+
 import React from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -6,7 +7,8 @@ import {
   useGetPendingReviewsQuery,
 } from "../../redux/apis/review.api";
 import { Review } from "../../models/review";
-
+import ImageFallback from "../ImageFallback";
+ImageFallback
 const ReviewApprovalComponent = () => {
   const { data: reviews = [], isLoading } = useGetPendingReviewsQuery({});
   const [approveReview, { isLoading: isApproving }] = useApproveReviewMutation();

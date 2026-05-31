@@ -1,9 +1,31 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 const resources = [
-  { title: "AI Writing Assistant", description: "Generate ideas and improve drafts with AI.", linkText: "Learn more", link: "/writing-assistant" },
-  { title: "Writing Templates", description: "Use curated templates for different writing goals.", linkText: "Browse templates", link: "/templates" },
-  { title: "Writing Community", description: "Collaborate with other writers and share feedback.", linkText: "Join now", link: "/community" },
+  {
+    icon: "fas fa-magic",
+    title: "AI Writing Assistant",
+    description:
+      "Get smart suggestions and overcome writer's block with AI-powered assistance.",
+    linkText: "Learn more",
+    link: "/writing-assistant",
+  },
+  {
+    icon: "fas fa-book",
+    title: "Writing Templates",
+    description:
+      "Access professional templates for various writing styles and formats.",
+    linkText: "Browse templates",
+    link: "/templates",
+  },
+  {
+    icon: "fas fa-users",
+    title: "Writing Community",
+    description:
+      "Connect with fellow writers, share feedback, and grow together.",
+    linkText: "Join now",
+    link: "/community",
+  },
 ];
 
 const ResourceComponent = () => (
@@ -53,7 +75,7 @@ const ResourceComponent = () => (
         ))}
       </div>
     </div>
-  </section>
-);
+  );
+};
 
 export default ResourceComponent;

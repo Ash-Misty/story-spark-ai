@@ -1,5 +1,8 @@
+import React from "react";
 import { useGetReviewsQuery } from "../../../redux/apis/review.api";
 import { Review } from "../../../models/review";
+import ImageFallback from "../../ImageFallback";
+ImageFallback
 import ReviewForm from "./ReviewForm";
 
 const WriterFeedbackComponent = () => {
@@ -87,6 +90,7 @@ const WriterFeedbackComponent = () => {
           <ReviewForm />
         </div>
       </div>
+      <ReviewForm />
     </section>
   );
 };

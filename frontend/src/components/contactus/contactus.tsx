@@ -173,7 +173,7 @@ export default function Contact() {
 
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-12 xl:gap-16 w-full box-border">
 
-          <div className="flex flex-col w-full box-border">
+          <div className="flex flex-col w-full box-border text-left">
             <span className="mb-6 hidden w-fit items-center gap-1.5 rounded-full border border-blue-500/10 dark:border-white/10 bg-blue-500/5 text-blue-600 dark:text-blue-400 px-4 py-1.5 text-xs font-bold uppercase tracking-wider lg:inline-flex select-none">
               <Zap className="h-3 w-3" aria-hidden="true" />
               Get in Touch
@@ -255,7 +255,7 @@ export default function Contact() {
           </div>
 
           <div className="w-full lg:sticky lg:top-24 box-border">
-            <div className="w-full bg-white dark:bg-[#111827]/40 border border-slate-200 dark:border-white/10 p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl transition-shadow duration-300 box-border">
+            <div className="w-full bg-white dark:bg-[#111827]/40 border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-xl transition-shadow duration-300 box-border text-left">
               
               <div className="mb-6 select-none">
                 <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">

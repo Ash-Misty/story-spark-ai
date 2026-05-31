@@ -10,8 +10,9 @@ import {
   useEmailVerifyMutation,
   useVerifyOtpMutation,
 } from "../../redux/apis/otp.verify.api";
-import { useRegisterUserMutation, useGoogleLoginMutation } from "../../redux/apis/auth.api";
-import { useNavigate, Link } from "react-router-dom";
+import { useRegisterUserMutation } from "../../redux/apis/auth.api";
+import { WandSparkles, BookOpen, UsersRound } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface IRegisterInfo {
   name: string;
@@ -85,6 +86,7 @@ const PASSWORD_REQUIREMENTS = [
 
 const SignUpComponent = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [emailVerify] = useEmailVerifyMutation();
   const [verifyOtp] = useVerifyOtpMutation();
   const [registerUser] = useRegisterUserMutation();
@@ -197,7 +199,8 @@ const SignUpComponent = () => {
         if (res.data.accessToken) {
           toast.success("OTP validated successfully!");
           storeUserInfo({ accessToken: res.data.accessToken });
-          navigate("/");
+          const redirectPath = location.state && location.state.from ? location.state.from : "/";
+          navigate(redirectPath);
         }
       } else {
         throw new Error("No verification token received");
@@ -266,34 +269,98 @@ const SignUpComponent = () => {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-md space-y-6 relative z-10">
-        <div className="flex flex-col items-center justify-center gap-3 text-center">
-          <Link to="/" className="inline-block shrink-0 transition-transform duration-200 active:scale-95">
-            <img 
-              src={logo} 
-              alt="Story Spark AI" 
-              className="h-12 w-auto object-contain brightness-100 dark:brightness-110"
-            />
-          </Link>
-        </div>
-
-        <div className="w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-950/5 box-border transition-colors duration-300">
-          <div className="mb-6 flex justify-start">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
-            >
-              <i className="fa-solid fa-arrow-left text-xs" />
-              Back to Home
-            </Link>
-          </div>
-
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-left">
-            {showOtpField ? "Verify Your Email" : "Create Account"}
+      <div className="flex w-full flex-col justify-center py-12 relative z-10">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8">
+          <h2 className="text-center text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400 drop-shadow-sm">
+            STORY SPARK AI
           </h2>
+        </div>
+        <div className="flex justify-center items-center gap-40">
+        
+                <div className="flex flex-col gap-5">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+                    
+                    Turns Ideas into
+                    <br /> 
+                    unforgotable stories
+                    
+                    </h1>
+                  <p>AI powered storytelling that helps you
+                      <br />            
+                     create connect inspire.</p>
+        
+                     <div className="flex justify-center items-center gap-6 border border-gray-300 rounded-2xl bg-slate-50 dark:bg-slate-800 dark:text-gray-400">
+                      <div>
+                        <WandSparkles className="text-violet-600"/>
+                      </div>
+                      <div>
+                        <h1 className="font-bold">Smart writing</h1>
+                        <p>AI that understands your ideas</p>
+                      </div>
+                     </div>
+        
+        
+                     <div className="flex justify-center items-center gap-6 border border-gray-300 rounded-2xl bg-slate-50 dark:bg-slate-800 dark:text-gray-400">
+                      <div>
+                        <BookOpen className="text-violet-600"/>
+                      </div>
+                      <div>
+                        <h1 className="font-bold">Endless Creativity</h1>
+                        <p>Stories that captivate and inspire</p>
+                      </div>
+                     </div>
+        
+        
+                     <div className="flex justify-center items-center gap-6 border border-gray-300 rounded-2xl bg-slate-50 dark:bg-slate-800 dark:text-gray-400">
+                      <div>
+                        <UsersRound className="text-violet-600"/>
+                      </div>
+                      <div>
+                        <h1 className="font-bold">Built for everyone</h1>
+                        <p>Writers, Creaters and dreamers</p>
+                      </div>
+                     </div>
+                     <div className="border border-gray-300 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 dark:text-gray-400">
+                        Create, edit, and generate engaging multiple story
+                        <br />
+                         variations from a single prompt.
+                          <br />                
+                         Perfect for writers, creators, and enthusiasts 
+                         <br />
+                         exploring the future of fiction.
+                     </div>
+                </div>
+        
+        <div className="w-full max-w-md bg-slate-50 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-8 sm:p-10 shadow-2xl">
+          <h3 className="text-center text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-200">
+            {showOtpField ? "Verify Your Email" : "Create Account"}
+          </h3>
+
+          {!showOtpField && (
+            <p className="mt-2 mb-6 text-center text-sm text-slate-500 dark:text-slate-400">
+              Join StorySparkAI and begin your creative journey.
+            </p>
+          )}
+          <body className="overflow-x-hidden"></body>
+          {!showOtpField && (
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700/50"></div>
+              </div>
+             <div className="relative flex justify-center text-sm">
+                <span className="bg-white dark:bg-slate-800/60 text-slate-800 dark:text-slate-400 font-semibold">
+                  SIGN UP WITH EMAIL
+                </span>
+              </div>
+            </div>
+          )}
 
           {!showOtpField ? (
-            <form className="grid grid-cols-1 gap-5 w-full box-border" onSubmit={handleSubmit(onSubmit)} noValidate>
+
+            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate> 
+
+            <form className="space-y-5 w-full max-w-full min-w-0" onSubmit={handleSubmit(onSubmit)}>
+
               <SSInput
                 label="Name"
                 name="name"
@@ -304,10 +371,10 @@ const SignUpComponent = () => {
                 autoComplete="name"
                 validation={{
                   required: "Name is required",
-                  minLength: {
-                    value: 2,
-                    message: "Name must be at least 2 characters",
-                  },
+                minLength: {
+                value: 3,
+                message: "Name must be at least 3 characters",
+                },
                   pattern: {
                     value: /^[A-Za-z0-9\s._]+$/,
                     message: "Only letters, numbers, spaces, underscores, and dots are allowed",
@@ -381,7 +448,7 @@ const SignUpComponent = () => {
                 type="password"
                 placeholder="Confirm your password"
                 required={true}
-                icon="fi fi-rr-eye"
+                icon="fi fi-rr-lock" 
                 register={register}
                 autoComplete="new-password"
                 error={errors.confirmPassword}
@@ -471,8 +538,8 @@ const SignUpComponent = () => {
           )}
         </div>
       </div>
-
       <Toaster position="top-right" reverseOrder={false} />
+    </div>
     </div>
   );
 };

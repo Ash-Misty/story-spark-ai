@@ -18,6 +18,7 @@ interface SSInputProps<T extends FieldValues> {
   validation?: RegisterOptions<T>;
   error?: FieldError;
   autoComplete?: string;
+  autoFocus?: boolean;
 }
 
 const SSInput = <T extends FieldValues>({
@@ -31,6 +32,7 @@ const SSInput = <T extends FieldValues>({
   validation,
   error,
   autoComplete,
+  autoFocus
 }: SSInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,11 +54,28 @@ const SSInput = <T extends FieldValues>({
             <i className={icon}></i>
           </span>
         )}
-        
+
+       <input
+  type={inputType}
+  id={name}
+  className={`w-full box-border pl-8 pr-10 py-1.5 text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border-0 sm:text-sm ${
+    error
+      ? "outline-red-500"
+      : "outline-gray-800 focus:outline-indigo-600"
+  }`}
+  placeholder={placeholder}
+  autoComplete={autoComplete}
+  {...register(name, validation)}
+/>
+
         <input
           type={inputType}
           id={name}
-          placeholder={placeholder}
+          className={`w-full pl-8 pr-10 py-1.5 ttext-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border rounded-md sm:text-sm ${
+          error
+          ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-red-500"
+          : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:focus:border-blue-500"
+          }`}          placeholder={placeholder}
           autoComplete={autoComplete}
           {...register(name, validation)}
           className={`w-full h-11 block box-border rounded-xl border bg-transparent text-sm transition-all duration-200 focus:outline-none focus:ring-2 ${

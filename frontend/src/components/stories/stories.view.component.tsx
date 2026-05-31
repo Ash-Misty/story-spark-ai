@@ -5,8 +5,6 @@ import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/p
 import { useGetProfileInfoQuery } from "../../redux/apis/user.api";
 import jsPDF from "jspdf";
 import StoryWorldMap from "../story-map/StoryWorldMap";
-import StoryRemix from "../remix/StoryRemix";
-import StoryTranslator from "../translate/StoryTranslator";
 import BookmarkButton from "../BookmarkButton";
 import logo from "../../assets/logoNew.png";
 import StoryGeneratingAnimation from "../loading/story-generating-animation.component";
@@ -15,11 +13,17 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setStory } from "../../redux/slices/storySlice";
 import ContinueStoryButton from "../story/ContinueStoryButton";
+import StoryTradingCard from "../cards/StoryTradingCard";
+import CardCollection from "../cards/CardCollection";
+import StoryCoverImage from "./StoryCoverImage";
+
+ImageFallback
 import {
   useGenerateAlternateEndingsMutation,
   useGenerateFreeAlternateEndingsMutation,
 } from "../../redux/apis/ai.model.api";
 
+<<<<<<< HEAD
 const GENRE_THEMES: Record<string, { gradient: string; accent: string; icon: string }> = {
   fantasy:    { gradient: "135deg, #667eea 0%, #764ba2 50%, #f093fb 100%", accent: "#c084fc", icon: "✦" },
   romance:    { gradient: "135deg, #f857a6 0%, #ff5858 50%, #ffb347 100%", accent: "#fb7185", icon: "♡" },
@@ -191,6 +195,11 @@ const StoryCoverImage: React.FC<StoryCoverImageProps> = ({
   );
 };
 
+=======
+// ─── Main Component ─────────────────────────────────────────────────────────
+
+import ImageFallback from "../ImageFallback";
+>>>>>>> origin/main
 export interface IStories {
   uuid: string;
   title: string;
@@ -198,55 +207,19 @@ export interface IStories {
   tag: string;
   imageURL: string;
   language?: string;
-  emotions?: string[];
-  genre?: string;
-  enhancedPrompt?: string;
+import React from "react";
+import { Post } from "../../models/post";
+import { useNavigate } from "react-router-dom";
+
+interface IRelatedStoriesComponentProps {
+  posts: Post[],
+  currentPostId: string;
 }
 
-interface IPost extends IStories {
-  topic: ITopicData[];
-  isPublished?: boolean;
-}
-
-interface StoriesComponentProps {
-  stories: IStories[];
-  isLogin: boolean;
-  setStories: (stories: IStories[]) => void;
-  onPublishSuccess?: () => void;
-  isLoading?: boolean;
-}
-
-type StorySentenceSegment = {
-  id: string;
-  text: string;
-  startWordIndex: number;
-  endWordIndex: number;
-};
-
-const buildSentenceSegments = (content: string): StorySentenceSegment[] => {
-  if (!content.trim()) return [];
-  const sentenceMatches = content.match(/[^.!?]+[.!?]*\s*/g) ?? [content];
-  const segments: StorySentenceSegment[] = [];
-  let wordCursor = 0;
-  sentenceMatches.forEach((sentence, index) => {
-    const trimmedSentence = sentence.trim();
-    if (!trimmedSentence) return;
-    const wordsInSentence = sentence.match(/\S+/g)?.length ?? 0;
-    const startWordIndex = wordCursor;
-    const endWordIndex = wordsInSentence > 0 ? wordCursor + wordsInSentence - 1 : wordCursor;
-    segments.push({ id: `${index}-${startWordIndex}-${endWordIndex}`, text: sentence, startWordIndex, endWordIndex });
-    wordCursor += wordsInSentence;
-  });
-  return segments;
-};
-
-const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
-  stories,
-  isLogin,
-  setStories,
-  isLoading,
-  onPublishSuccess,
+const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
+  posts,currentPostId,
 }) => {
+<<<<<<< HEAD
   const location = useLocation();
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const dispatch = useDispatch();
@@ -592,6 +565,28 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 w-full box-border border-b border-slate-200/60 dark:border-white/5 pb-6">
             <div className="text-left">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+=======
+  const navigate = useNavigate();
+  const filteredPosts=posts.filter((post)=>post._id!==currentPostId)
+  return (
+    <div className="mt-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto pb-10">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
+        <div className="col-span-1 lg:col-span-8 flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div>
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400 mb-2">
+>>>>>>> origin/main
                 {selectedStory?.title}
               </h1>
               <div className="flex flex-wrap gap-2 select-none">
@@ -601,6 +596,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-purple-500/5 text-purple-600 dark:text-purple-400 border border-purple-500/10 py-1 px-3 text-xs font-bold uppercase tracking-wider shadow-sm">
                   🌐 {selectedStory.language || "English"}
                 </span>
+<<<<<<< HEAD
                 {selectedStory.emotions && selectedStory.emotions.length > 0 && (
                   <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10 py-1 px-3 text-xs font-bold uppercase tracking-wider shadow-sm">
                     😊 {selectedStory.emotions.join(", ")}
@@ -629,10 +625,36 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                     />
                   </button>
                 ))}
+=======
+              </div>
+            </div>
+            <div className="flex justify-start sm:justify-end">
+              <div className="flex -space-x-5">
+                {stories && stories.length > 0 && (
+                  stories.map((story) => (
+                    <button
+                      key={story.uuid}
+                      className={`relative w-16 h-16 rounded-full border-2 ${
+                        selectedStory?.uuid === story.uuid
+                          ? "border-blue-500 scale-110"
+                          : "border-white"
+                      } hover:scale-110 transition-transform duration-200 focus:outline-none`}
+                      onClick={() => handelStorySelection(story)}
+                    >
+                      <ImageFallback
+                        src={story.imageURL}
+                        alt={story.title}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </button>
+                  ))
+                )}
+>>>>>>> origin/main
               </div>
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Story content card */}
           <div className="bg-white dark:bg-[#111827]/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm w-full box-border text-left">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-white/5 select-none">
@@ -655,17 +677,116 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 </button>
                 <button type="button" className="rounded-xl px-3 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 border border-slate-200/60 dark:border-transparent text-xs font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.98] cursor-pointer" onClick={() => setShowTranslator(true)} disabled={!selectedStory}>
                   🌍 Translate
+=======
+          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+            <div className="absolute top-[-50px] right-[-50px] w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-[-50px] left-[-50px] w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <h3 className="text-xl font-bold text-slate-200 relative z-10">
+                Generated Story
+              </h3>
+              <div className="flex flex-wrap items-center gap-2 relative z-10">
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-slate-700 text-slate-200 font-semibold cursor-pointer hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleCopyStory}
+                  disabled={!selectedStory}
+                >
+                  {isCopied ? "✓ Copied" : "📋 Copy"}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-purple-700 text-slate-200 font-semibold cursor-pointer hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleExportPDF}
+                  disabled={!selectedStory}
+                >
+                  📄 Export PDF
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-indigo-700 text-slate-200 font-semibold cursor-pointer hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleExportMarkdown}
+                  disabled={!selectedStory}
+                >
+                  ⬇️ Export Markdown
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setShowWorldMap(true)}
+                  disabled={!selectedStory}
+                >
+                  🗺️ World Map
+>>>>>>> origin/main
                 </button>
                 <button
                   type="button"
                   id="publish-story-btn"
+<<<<<<< HEAD
                   className="rounded-xl px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.98] cursor-pointer disabled:opacity-50"
+=======
+                  className={`rounded-lg px-5 py-2 font-semibold flex items-center space-x-2 cursor-pointer bg-blue-600 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    loading ? "" : "hover:bg-blue-500 hover:shadow-lg active:scale-95"
+                  }`}
+>>>>>>> origin/main
                   onClick={handelPublishStory}
                   disabled={loading || !selectedStory}
                 >
                   {loading ? "Publishing..." : "Publish"}
                 </button>
               </div>
+            </div>
+            <div id="story-content" className="prose prose-invert max-w-none text-slate-300 leading-relaxed tracking-wide relative z-10">
+              <p className="break-words whitespace-pre-wrap">
+                {sentenceSegments.length > 0 ? (
+                  sentenceSegments.map((segment: StorySentenceSegment) => {
+                    const isActiveSentence =
+                      isNarrationActive &&
+                      narrationWordIndex >= segment.startWordIndex &&
+                      narrationWordIndex <= segment.endWordIndex;
+
+                    return (
+                      <span
+                        key={segment.id}
+                        className={
+                          isActiveSentence
+                            ? "rounded-md bg-indigo-500/20 px-0.5 py-0.5 text-indigo-100 ring-1 ring-indigo-400/30"
+                            : undefined
+                        }
+                      >
+                        {segment.text}
+                      </span>
+                    );
+                  })
+                ) : (
+                  selectedStory.content
+                )}
+              </p>
+            </div>
+
+            <div className="relative z-10 mt-6">
+              <AudioPlayer
+                ref={audioPlayerRef}
+                text={selectedStory.content}
+                title={selectedStory.title}
+                onWordIndexChange={setNarrationWordIndex}
+                onPlaybackStateChange={setNarrationState}
+    <div className="grid grid-cols-2 gap-6">
+      {filteredPosts.length > 0 ? (
+        filteredPosts.map((post: Post) => (
+          <div
+            onClick={() => navigate(`/post/${post._id}`)}
+            key={post._id}
+            className="cursor-pointer bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col h-full"
+          >
+            <div className="relative overflow-hidden">
+              <img
+                src={post.imageURL}
+                alt="Related Story"
+                className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60 pointer-events-none"></div>
             </div>
 
             {selectedStory.enhancedPrompt && (
@@ -682,15 +803,89 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 {sentenceSegments.length > 0 ? (
                   sentenceSegments.map((segment: StorySentenceSegment) => {
                     const isActiveSentence = isNarrationActive && narrationWordIndex >= segment.startWordIndex && narrationWordIndex <= segment.endWordIndex;
+                    
+                    // Split the sentence text into word tokens, preserving whitespace
+                    const rawParts = segment.text.split(/(\s+)/);
+                    let wordOffset = 0;
+
                     return (
+<<<<<<< HEAD
                       <span key={segment.id} className={isActiveSentence ? "rounded-lg bg-blue-500/10 dark:bg-blue-500/20 px-1 py-0.5 text-slate-900 dark:text-white font-semibold transition-all" : undefined}>
                         {segment.text}
+=======
+                      <span
+                        key={segment.id}
+                        className={isActiveSentence ? "transition-colors duration-300 text-slate-100" : undefined}
+                      >
+                        {rawParts.map((part, partIdx) => {
+                          if (part === "") return null;
+                          if (/^\s+$/.test(part)) {
+                            return part;
+                          }
+
+                          const absoluteWordIndex = segment.startWordIndex + wordOffset;
+                          wordOffset++;
+
+                          const isActiveWord = isNarrationActive && narrationWordIndex === absoluteWordIndex;
+
+                          if (isActiveWord) {
+                            return (
+                              <span
+                                key={partIdx}
+                                className="bg-indigo-500/20 text-indigo-300 rounded px-0.5 transition-all duration-150"
+                              >
+                                {part}
+                              </span>
+                            );
+                          }
+
+                          return (
+                            <span key={partIdx}>
+                              {part}
+                            </span>
+                          );
+                        })}
+>>>>>>> origin/main
                       </span>
                     );
                   })
-                ) : selectedStory.content}
+                ) : (
+                  (() => {
+                    const rawParts = selectedStory.content.split(/(\s+)/);
+                    let wordOffset = 0;
+                    return rawParts.map((part, partIdx) => {
+                      if (part === "") return null;
+                      if (/^\s+$/.test(part)) {
+                        return part;
+                      }
+
+                      const absoluteWordIndex = wordOffset;
+                      wordOffset++;
+
+                      const isActiveWord = isNarrationActive && narrationWordIndex === absoluteWordIndex;
+
+                      if (isActiveWord) {
+                        return (
+                          <span
+                            key={partIdx}
+                            className="bg-indigo-500/20 text-indigo-300 rounded px-0.5 transition-all duration-150"
+                          >
+                            {part}
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <span key={partIdx}>
+                          {part}
+                        </span>
+                      );
+                    });
+                  })()
+                )}
               </p>
             </div>
+<<<<<<< HEAD
 
             <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 w-full box-border">
               <AudioPlayer ref={audioPlayerRef} text={selectedStory.content} title={selectedStory.title} onWordIndexChange={setNarrationWordIndex} onPlaybackStateChange={setNarrationState} />
@@ -867,13 +1062,19 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
           onRemixComplete={(remixedStory) => { setStories([remixedStory, ...stories]); setSelectedStory(remixedStory); setShowRemix(false); }}
           onClose={() => setShowRemix(false)}
         />
+=======
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-slate-500 col-span-2 py-8">No related stories found.</p>
+>>>>>>> origin/main
       )}
-      {showWorldMap && selectedStory && (
-        <StoryWorldMap story={selectedStory.content} title={selectedStory.title} onClose={() => setShowWorldMap(false)} />
-      )}
-      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default StoriesViewComponent;
+=======
+export default RelatedStoriesComponent;
+>>>>>>> origin/main
