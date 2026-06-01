@@ -1,24 +1,11 @@
-<<<<<<< HEAD
-import { useEffect, useState, FC } from "react";
-=======
-﻿import { FC, useEffect, useState } from "react";
->>>>>>> upstream/main
+import { FC, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { HELP_SECTIONS } from "../help_center.utils";
 
 const HelpSidebar: FC = () => {
-<<<<<<< HEAD
-  const [activeSection, setActiveSection] =
-    useState<string>("categories");
-
-const HelpSidebar: FC = () => {
-const HelpSidebar = () => {
-  const [activeSection, setActiveSection] = useState("help-categories");
-=======
   const [activeSection, setActiveSection] = useState<string>(
     HELP_SECTIONS[0]?.id ?? "categories"
   );
->>>>>>> upstream/main
 
   useEffect(() => {
     const sectionIds = HELP_SECTIONS.map((section) => section.id);

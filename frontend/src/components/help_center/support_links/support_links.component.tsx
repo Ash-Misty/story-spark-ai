@@ -85,13 +85,8 @@ const SupportLinks: FC<SupportLinksProps> = ({ links }) => {
         ))}
       </div>
 
-<<<<<<< HEAD
       {/* GitHub CTA Container */}
       <div className="flex justify-center mt-8">
-=======
-      <div className="mt-10 text-center">
-        {/* GitHub CTA */}
->>>>>>> upstream/main
         <a
           href="https://github.com"
           target="_blank"
@@ -101,21 +96,6 @@ const SupportLinks: FC<SupportLinksProps> = ({ links }) => {
           <i className="fa-brands fa-github text-base"></i>
           Contribute Now
         </a>
-<<<<<<< HEAD
-          {/* GitHub CTA */}
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-2xl border border-indigo-500/20 bg-indigo-500/10 px-5 py-3 text-sm font-semibold text-indigo-600 transition-all duration-300 hover:scale-105 hover:bg-indigo-500/20 dark:text-indigo-300"
-          >
-            <i className="fa-brands fa-github text-base"></i>
-            Contribute Now
-          </a>
-        ))}
-
-=======
->>>>>>> upstream/main
       </div>
     </motion.section>
   );
