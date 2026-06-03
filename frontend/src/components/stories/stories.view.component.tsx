@@ -543,19 +543,6 @@ const [, setShowRemix] = useState<boolean>(false);
         setError(getErrorMessage(err));
       }
       toast.error("Failed to generate alternate endings.");
-      if (res && res.data) {
-        setEndingsCache((prev) => ({
-          ...prev,
-          [selectedStory.uuid]: res.data,
-        }));
-
-        toast.success("Alternate endings generated successfully!");
-      } else {
-        toast.error("Failed to generate alternate endings.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generate alternate endings. Please try again.");
     } finally {
       toast.dismiss(toastId);
       setIsGeneratingEndings(false);
@@ -865,23 +852,6 @@ const [, setShowRemix] = useState<boolean>(false);
   }, [stories, dispatch]);
 
   useEffect(() => {
-    const autoSaveStory = async () => {
-      if (!isLogin || !selectedStory) return;
-      if (selectedStory.content === lastSavedContentRef.current) return;
-      if (hasSavedSessionRef.current) return;
-      if (isSavingRef.current) return;
-      isSavingRef.current = true;
-      const post: IPost = { ...selectedStory, topic: selectTopics, isPublished: false };
-      try {
-        const result = await createPost(post).unwrap();
-        if (result && result.data && result.data._id) savedPostIdRef.current = result.data._id;
-
-    return () => {
-      player?.stop();
-    };
-  }, [location.pathname]);
-
-  useEffect(() => {
     setNarrationWordIndex(0);
     setNarrationState("idle");
   }, [selectedStory?.uuid]);
@@ -945,17 +915,6 @@ const [, setShowRemix] = useState<boolean>(false);
     };
 
     const timer = setTimeout(() => { autoSaveStory(); }, 1000);
-    return () => clearTimeout(timer);
-  }, [selectedStory, selectedStory?.content, isLogin, selectTopics, createPost]);
-
-  const handelStorySelection = (story: IStories) => { setSelectedStory(story); };
-
-
-    // Debounce to prevent multiple immediate renders/rerenders from triggering save
-    const timer = setTimeout(() => {
-      autoSaveStory();
-    }, 1000);
-
     return () => clearTimeout(timer);
   }, [selectedStory, selectedStory?.content, isLogin, selectTopics, createPost]);
 
@@ -1199,13 +1158,6 @@ const [, setShowRemix] = useState<boolean>(false);
         }
       }
 
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(99, 102, 241); // Brand Indigo
-        doc.text("StorySparkAI", leftMargin, yCursor + 6);
-      }
-
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184); // Slate 400
@@ -1353,20 +1305,21 @@ const [, setShowRemix] = useState<boolean>(false);
     }
   };
 
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const getSafeFileName = (title: string, ext: string) => {
+    const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return `${cleanTitle || "story"}.${ext}`;
+  };
+
   const handleExportMarkdown = () => {
-    if (!selectedStory) { toast.error("No story available to export."); return; }
-
-      console.error(error);
-      toast.dismiss(toastId);
-      toast.error("Failed to export PDF.");
-    }
-
-    if (!selectedStory.content?.trim()) {
-      toast.error("Story content is empty. Cannot export.");
-      return;
-    }
-
-const handleExportMarkdown = () => {
     if (!selectedStory) { toast.error("No story available to export."); return; }
     if (!selectedStory.content?.trim()) {toast.error("Story content is empty. Cannot export.");return;}
 
@@ -2337,6 +2290,7 @@ if (isLoading) {
           </div>
         </div>
       </div>
+
       {showWorldMap && selectedStory && (
         <StoryWorldMap
           story={selectedStory.content}
@@ -2374,13 +2328,6 @@ if (isLoading) {
     </div>
   );
 };
-
-
-
-export default StoriesViewComponent;
-
-export default RelatedStoriesComponent;
-
 
 export default StoriesViewComponent;
 

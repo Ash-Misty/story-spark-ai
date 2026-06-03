@@ -404,10 +404,7 @@ const toggleBookmark = async (postId: string, token: ITokenPayload) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found!");
   }
 
-  const post = await Post.findOne({
-    _id: postId,
-    isDeleted: { $ne: true },
-  });
+  const post = await Post.findOne({ _id: postId, isDeleted: { $ne: true } });
 
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
