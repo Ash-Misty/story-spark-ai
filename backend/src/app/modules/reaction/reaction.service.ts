@@ -15,7 +15,6 @@ const toggleReaction = async (
 ) => {
   const { email } = token;
 
-  const user = await User.findOne({ email });
   const user = await User.findOne({ email }).select("_id").lean();
 
   if (!user) {
@@ -25,9 +24,8 @@ const toggleReaction = async (
   const post = await Post.findOne({
     _id: postId,
     isDeleted: { $ne: true },
-  });
   }).select("likesCount reactions");
-
+  
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
@@ -68,11 +66,16 @@ const toggleReaction = async (
     userId: user._id,
   });
 
-  // Remove reaction if same type clicked again
-  if (existingReaction && existingReaction.type === type) {
-    await Reaction.findByIdAndDelete(existingReaction._id);
-
-    const likesCount = await Reaction.countDocuments({ postId });
+  if (existingReaction) {
+    if (existingReaction.type === type) {
+      // Remove reaction if the same type is toggled
+      await Reaction.findByIdAndDelete(existingReaction._id);
+      
+      post.reactions = (post.reactions || []).filter(
+        (id) => id && id.toString() !== existingReaction._id.toString()
+      );
+      post.likesCount = Math.max(0, (post.likesCount || 0) - 1);
+      await post.save();
 
     return {
       message: "Reaction removed successfully",
@@ -80,12 +83,12 @@ const toggleReaction = async (
     };
   }
 
-  // Update existing reaction
+  
   if (existingReaction) {
     existingReaction.type = type;
     await existingReaction.save();
   } else {
-    // Create new reaction
+    
     await Reaction.create({
 
       postId: new Types.ObjectId(postId),
@@ -118,3 +121,4 @@ const toggleReaction = async (
 export const ReactionService = {
   toggleReaction,
 };
+      
