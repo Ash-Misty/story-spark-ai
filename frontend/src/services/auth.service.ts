@@ -1,7 +1,11 @@
+import { AUTH_KEY } from "../constants/storage-key";
 import { AccessToken } from "../models/login";
 import { decodedToken } from "../utils/jwt";
-import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage } from "../utils/local-storage";
-import { AUTH_KEY } from "../constants/storage-key";
+import {
+  getFromLocalStorage,
+  removeFromLocalStorage,
+  setToLocalStorage,
+} from "../utils/local-storage";
 
 const AUTH_CHANGE_EVENT = "story-spark-auth-change";
 
@@ -22,6 +26,8 @@ export type AuthUserInfo = {
   avatar?: string;
 };
 
+// Raw shape of the decoded JWT payload — fields are optional because
+// different token versions or providers may omit some of them
 interface RawJwtPayload {
   email?: string;
   userId?: string;
@@ -35,6 +41,8 @@ interface RawJwtPayload {
   avatar?: string;
 }
 
+// Maps raw JWT payload to a typed AuthUserInfo object
+// Uses optional chaining + fallbacks to safely handle any missing fields
 const buildUserInfo = (decodedData: RawJwtPayload): AuthUserInfo => ({
   email: decodedData?.email || "",
   userId: decodedData?.userId || decodedData?._id || "",
@@ -47,20 +55,29 @@ const buildUserInfo = (decodedData: RawJwtPayload): AuthUserInfo => ({
   avatar: decodedData?.avatar || "",
 });
 
-const getValidDecodedToken = (): AuthUserInfo | null => {
+const getValidDecodedToken = () => {
   const authToken = getFromLocalStorage(AUTH_KEY);
 
   if (authToken) {
     try {
       const decodedData = decodedToken(authToken);
-      if (
-        typeof decodedData.exp === "number" &&
-        decodedData.exp <= Math.floor(Date.now() / 1000)
-      ) {
-        removeFromLocalStorage(AUTH_KEY);
-        return null;
-      }
-      return buildUserInfo(decodedData);
+          if (
+      typeof decodedData.exp === "number" &&
+      decodedData.exp <= Math.floor(Date.now() / 1000)
+    ) {
+      removeFromLocalStorage(AUTH_KEY);
+      return null;
+    }
+      return buildUserInfo({
+        email: decodedData.email ?? "",
+        role: decodedData.role ?? "",
+        userId: decodedData.userId ?? decodedData._id ?? "",
+        name: decodedData.name ?? "",
+        postsCount: decodedData.postsCount ?? 0,
+        subscriptionType: decodedData.subscriptionType ?? "free",
+        exp: decodedData.exp ?? 0,
+        iat: decodedData.iat ?? 0,
+      });
     } catch (error) {
       console.error("Invalid auth token:", error);
       removeFromLocalStorage(AUTH_KEY);
@@ -71,8 +88,9 @@ const getValidDecodedToken = (): AuthUserInfo | null => {
 };
 
 export const storeUserInfo = ({ accessToken }: AccessToken) => {
-  setToLocalStorage(AUTH_KEY, accessToken);
+  const result = setToLocalStorage(AUTH_KEY, accessToken);
   emitAuthChange();
+  return result;
 };
 
 export const getUserInfo = (): AuthUserInfo | null => {
