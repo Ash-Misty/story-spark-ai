@@ -193,47 +193,6 @@ const SignUpComponent = () => {
   };
 
   const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
-    setIsBusy(true);
-    try {
-      const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
-      if (res.data.accessToken) {
-        toast.success("Signed up with Google successfully!");
-        storeUserInfo({ accessToken: res.data.accessToken });
-        navigate("/");
-      }
-    } catch {
-      toast.error("Google login failed. Please try again.");
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleGoogleLoginError = () => {
-    toast.error("Google login failed. Please try again.");
-  };
-
-  const handleResendOtp = async () => {
-    if (!registerInfo) return;
-    setIsBusy(true);
-    try {
-      const res = await emailVerify({
-        name: registerInfo.name,
-        email: registerInfo.email,
-      }).unwrap();
-      if (res?.data) {
-        const { expiresAt } = res.data;
-        setExpiredAt(new Date(expiresAt).getTime());
-        toast.success("OTP resent successfully!");
-        setCooldown(60);
-      }
-    } catch (error) {
-      toast.error("Failed to resend OTP. Please try again.");
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) {
       toast.error("Google login failed");
       return;
@@ -246,11 +205,15 @@ const SignUpComponent = () => {
         toast.success("Logged in with Google successfully!");
         navigate("/");
       }
-    } catch (error) {
+    } catch {
       toast.error("Google authentication failed");
     } finally {
       setIsBusy(false);
     }
+  };
+
+  const handleGoogleLoginError = () => {
+    toast.error("Google login failed. Please try again.");
   };
 
   return (
@@ -296,50 +259,57 @@ const SignUpComponent = () => {
           )}
 
           {!showOtpField ? (
-            <form className="space-y-5 w-full min-w-0 block box-border" onSubmit={handleSubmit(onSubmit)}>
+            <form className="space-y-5 w-full min-w-0 block box-border overflow-hidden" onSubmit={handleSubmit(onSubmit)}>
 
-              <SSInput
-                label="Name"
-                name="name"
-                placeholder="Enter your name"
-                required={true}
-                icon="fi fi-rr-user"
-                register={register}
-                autoComplete="name"
-                validation={{
-                  required: "Name is required",
-                  minLength: { value: 2, message: "Name must be at least 2 characters" },
-                  pattern: {
-                    value: /^[A-Za-z0-9\s._]+$/,
-                    message: "Only letters, numbers, spaces, underscores, and dots are allowed",
-                  },
-                }}
-                error={errors.name}
-              />
+              {/* ── Fix: each input wrapped to prevent overflow ── */}
+              <div className="w-full min-w-0 overflow-hidden box-border">
+                <SSInput
+                  label="Name"
+                  name="name"
+                  placeholder="Enter your name"
+                  required={true}
+                  icon="fi fi-rr-user"
+                  register={register}
+                  autoComplete="name"
+                  validation={{
+                    required: "Name is required",
+                    minLength: { value: 2, message: "Name must be at least 2 characters" },
+                    pattern: {
+                      value: /^[A-Za-z0-9\s._]+$/,
+                      message: "Only letters, numbers, spaces, underscores, and dots are allowed",
+                    },
+                  }}
+                  error={errors.name}
+                />
+              </div>
 
-              <SSInput
-                label="Email address"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                required={true}
-                icon="fi fi-rr-envelope"
-                register={register}
-                autoComplete="email"
-                error={errors.email}
-              />
+              <div className="w-full min-w-0 overflow-hidden box-border">
+                <SSInput
+                  label="Email address"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  required={true}
+                  icon="fi fi-rr-envelope"
+                  register={register}
+                  autoComplete="email"
+                  error={errors.email}
+                />
+              </div>
 
-              <SSInput
-                label="Password"
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-                required={true}
-                icon="fi fi-rr-lock"
-                register={register}
-                autoComplete="new-password"
-                error={errors.password}
-              />
+              <div className="w-full min-w-0 overflow-hidden box-border">
+                <SSInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  required={true}
+                  icon="fi fi-rr-lock"
+                  register={register}
+                  autoComplete="new-password"
+                  error={errors.password}
+                />
+              </div>
 
               {password?.length > 0 && (
                 <div className="space-y-3 -mt-1 w-full min-w-0 overflow-hidden box-border">
@@ -369,47 +339,51 @@ const SignUpComponent = () => {
                 </div>
               )}
 
-              <SSInput
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                required={!showOtpField}
-                icon="fi fi-rr-lock"
-                register={register}
-                autoComplete="new-password"
-                validation={{
-                  validate: (value) => {
-                    if (showOtpField) return true;
-                    if (!value) return "Confirm password is required";
-                    if (value !== password) return "Passwords do not match!";
-                    return true;
-                  },
-                }}
-                error={errors.confirmPassword}
-              />
+              <div className="w-full min-w-0 overflow-hidden box-border">
+                <SSInput
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  required={!showOtpField}
+                  icon="fi fi-rr-lock"
+                  register={register}
+                  autoComplete="new-password"
+                  validation={{
+                    validate: (value) => {
+                      if (showOtpField) return true;
+                      if (!value) return "Confirm password is required";
+                      if (value !== password) return "Passwords do not match!";
+                      return true;
+                    },
+                  }}
+                  error={errors.confirmPassword}
+                />
+              </div>
 
               <div className="pt-2 w-full box-border">
                 <SSButton text="Sign Up" type="submit" isLoading={isBusy} />
               </div>
             </form>
           ) : (
-            <div className="grid grid-cols-1 gap-5 w-full min-w-0 box-border">
-              <SSInput
-                label="OTP"
-                name="otp"
-                placeholder="Enter your OTP"
-                required={true}
-                icon="fi fi-rr-key"
-                register={register}
-                validation={{
-                  required: "Please enter OTP",
-                  minLength: { value: 6, message: "OTP must be 6 digits" },
-                  maxLength: { value: 6, message: "OTP must be 6 digits" },
-                  pattern: { value: /^[0-9]{6}$/, message: "OTP must contain only numbers" },
-                }}
-                error={errors.otp}
-              />
+            <div className="grid grid-cols-1 gap-5 w-full min-w-0 overflow-hidden box-border">
+              <div className="w-full min-w-0 overflow-hidden box-border">
+                <SSInput
+                  label="OTP"
+                  name="otp"
+                  placeholder="Enter your OTP"
+                  required={true}
+                  icon="fi fi-rr-key"
+                  register={register}
+                  validation={{
+                    required: "Please enter OTP",
+                    minLength: { value: 6, message: "OTP must be 6 digits" },
+                    maxLength: { value: 6, message: "OTP must be 6 digits" },
+                    pattern: { value: /^[0-9]{6}$/, message: "OTP must contain only numbers" },
+                  }}
+                  error={errors.otp}
+                />
+              </div>
               <SSButton text="Verify OTP" type="button" onClick={handleOtpValidation} isLoading={isBusy} />
               <div className="text-center pt-1">
                 <button
@@ -461,4 +435,3 @@ const SignUpComponent = () => {
 };
 
 export default SignUpComponent;
-
