@@ -167,6 +167,7 @@ const getFollowStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+<<<<<<< HEAD
 const getWritingStreak = catchAsync(async (req: Request, res: Response) => {
   const token = await getToken(req);
   const user = await User.findOne({ email: token.email });
@@ -212,6 +213,13 @@ const updateWritingStreak = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+=======
+// Note: writing streak updates now happen server-side as a side effect of
+// publishing a post (see PostService.createPost). The previous
+// updateWritingStreak controller / "/me/streak/update" endpoint allowed any
+// authenticated user to fabricate streaks and achievements without writing
+// anything, and has been removed.
+>>>>>>> 4a3efd1e (Fix issue 1526)
 
 export const UserController = {
   getAllUsers,
@@ -226,5 +234,8 @@ export const UserController = {
   getFollowStatus,
   getWritingStreak,
   getAchievements,
+<<<<<<< HEAD
   updateWritingStreak,
+=======
+>>>>>>> 4a3efd1e (Fix issue 1526)
 };

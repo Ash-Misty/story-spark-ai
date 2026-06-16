@@ -15,11 +15,21 @@ import { postSearchFields } from "./post.constant";
 import { SortOrder, Types } from "mongoose";
 import { GamificationService } from "../gamification/gamification.service";
 import { WritingStreakService } from "../gamification/writing_streak.service";
+<<<<<<< HEAD
 
 const MAX_SEARCH_TERM_LENGTH = 100;
 const escapeRegex = (text: string): string => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
+=======
+const MAX_SEARCH_TERM_LENGTH = 100;
+
+const escapeRegex = (text: string): string => {
+  return text.replace(/[-[\]{}()*+?.,\^$|#\s]/g, "\$&");
+};
+// const MAX_SEARCH_TERM_LENGTH = 100;
+
+>>>>>>> 4a3efd1e (Fix issue 1526)
 interface ICursorPayload {
   value: string;
   id: string;
@@ -109,13 +119,19 @@ const createPost = async (payload: IPostPayload, token: ITokenPayload) => {
       author: user._id,
       updatedBy: user._id,
     });
+
     if (res && res.isPublished) {
-      user.postsCount += 1;
-      await user.save();
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { $inc: { postsCount: 1 } },
+        { new: true }
+      );
       GamificationService.addXp(String(user._id), 50, "CREATED_POST").catch(console.error);
-      if (user.postsCount === 1) {
+      if (updatedUser && updatedUser.postsCount === 1) {
         GamificationService.awardBadge(String(user._id), "First Story").catch(console.error);
       }
+     
+      WritingStreakService.updateStreakAndUnlocks(String(user._id)).catch(console.error);
     }
     return res;
   } catch (error) {
@@ -123,8 +139,7 @@ const createPost = async (payload: IPostPayload, token: ITokenPayload) => {
       httpStatus.INTERNAL_SERVER_ERROR,
       "Failed to create post"
     );
-  }
-};
+  
 
 const getPosts = async (
   filters: IPostSearchFields,
