@@ -40,6 +40,7 @@ import {
   useGetStoryTreeQuery,
   useCreateBranchVersionMutation,
 } from "../../redux/apis/storyVersion.api";
+import AddToCollectionModal from "../collections/AddToCollectionModal";
 
 import { toast } from "react-hot-toast";
 
@@ -118,6 +119,7 @@ const PostDetailsComponent = () => {
   const [selectedVersionForBranch, setSelectedVersionForBranch] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
   const [forkStory, { isLoading: isForking }] = useForkStoryMutation();
@@ -443,6 +445,14 @@ const PostDetailsComponent = () => {
                 >
                   ✏️ Edit Story
                 </button>
+                {post?.isPublished && (
+                  <button
+                    onClick={() => setShowCollectionModal(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
+                  >
+                    📚 Add to Collection
+                  </button>
+                )}
                 <button
                   onClick={() => setShowTimeline(true)}
                   className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
@@ -826,6 +836,14 @@ const PostDetailsComponent = () => {
       )}
 
       <div className="absolute top-[-200px] left-[250px] w-[800px] h-[350px] bg-blue-500/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+      {showCollectionModal && id && currentUser && (
+        <AddToCollectionModal
+          storyId={id}
+          userId={currentUser.userId}
+          onClose={() => setShowCollectionModal(false)}
+        />
+      )}
     </div>
   );
 };
