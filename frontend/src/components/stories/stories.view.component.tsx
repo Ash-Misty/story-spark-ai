@@ -14,6 +14,7 @@ import StoryTranslator from "../translate/StoryTranslator";
 import StoryEndingGenerator from "./StoryEndingGenerator";
 import StoryImprovementSuggestions from "./StoryImprovementSuggestions";
 import StoryRecommendations from "./StoryRecommendations";
+import StoryCollaboration from "./StoryCollaboration";
 
 export interface IStories {
   uuid: string;
@@ -53,6 +54,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [showEndingGenerator, setShowEndingGenerator] = useState(false);
   const [showImprovementPanel, setShowImprovementPanel] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showCollaboration, setShowCollaboration] = useState(false);
 
   useEffect(() => {
     setSelectTopics(topics.filter((topic) => topic.selected));
@@ -335,6 +337,13 @@ const handleGenerateCharacterProfile = async () => {
                       onClick={() => setShowRecommendations(true)}
                     >
                       📚 Recommendations
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-cyan-700 text-white font-semibold cursor-pointer hover:bg-cyan-600 transition-colors"
+                      onClick={() => setShowCollaboration(!showCollaboration)}
+                    >
+                      🤝 Collaborate
                     </button>
                   </>
                 )}
