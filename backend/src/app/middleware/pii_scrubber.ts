@@ -13,12 +13,15 @@ export const scrubPII = (text: string): string => {
 
   let scrubbed = text;
 
-  // If this already looks scrubbed, skip NLP name extraction.
-  // (Prevents odd behavior where compromise reinterprets placeholders.)
+  // If this already contains our redaction tokens, we should be idempotent.
+  // (Prevents repeated middleware execution from further mutating placeholders.)
   const containsAnyRedactionToken =
     /\[REDACTED_(?:EMAIL|PHONE|NAME|SSN|CARD|ADDRESS)\]/i.test(scrubbed);
 
+  if (containsAnyRedactionToken) return scrubbed;
+
   // 1. Emails
+
   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
   scrubbed = scrubbed.replace(emailRegex, "[REDACTED_EMAIL]");
 

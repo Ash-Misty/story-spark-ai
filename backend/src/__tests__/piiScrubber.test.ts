@@ -139,6 +139,23 @@ describe("scrubPII — edge cases", () => {
   });
 });
 
+describe("scrubPII — idempotency", () => {
+  it("is stable when called twice", () => {
+    const input = "Contact alice@example.com or call 555-867-5309. 123 Main St";
+    const once = scrubPII(input);
+    const twice = scrubPII(once);
+    expect(twice).toBe(once);
+  });
+
+  it("does not further change already-redacted tokens", () => {
+    const input = "Already scrubbed: [REDACTED_EMAIL] [REDACTED_PHONE] [REDACTED_NAME]";
+    const once = scrubPII(input);
+    const twice = scrubPII(once);
+    expect(twice).toBe(once);
+  });
+});
+
+
 describe("piiScrubberMiddleware — body fields", () => {
   beforeEach(() => jest.clearAllMocks());
 
