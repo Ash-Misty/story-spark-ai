@@ -24,6 +24,7 @@ import { useCreatePostMutation } from "../../redux/apis/post.api";
 import jsPDF from "jspdf";
 import StoryTranslator from "../translate/StoryTranslator";
 import StoryEndingGenerator from "./StoryEndingGenerator";
+import StoryImprovementSuggestions from "./StoryImprovementSuggestions";
 
 export interface IStories {
   uuid: string;
@@ -61,6 +62,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [createPost] = useCreatePostMutation();
   const [showGenreTransformation, setShowGenreTransformation] = useState<boolean>(false);
   const [showEndingGenerator, setShowEndingGenerator] = useState(false);
+  const [showImprovementPanel, setShowImprovementPanel] = useState(false);
 
   const [showWorldMap, setShowWorldMap] = useState<boolean>(false);
 
@@ -354,6 +356,13 @@ if (!stories || stories.length === 0) {
                       onClick={handleExportPDF}
                     >
                       📄 Export PDF
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-yellow-600 text-white font-semibold hover:bg-yellow-500 transition-colors"
+                      onClick={() => setShowImprovementPanel(true)}
+                    >
+                      ✨ Improve
                     </button>
                     <button
                       type="button"
