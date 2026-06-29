@@ -21,11 +21,13 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } as const 
-  },
+
+
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  }
 };
 
 const features = [
@@ -135,7 +137,7 @@ const FeatureCard = ({ feature }: { feature: Feature }) => {
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 bg-white/10 shadow-md group-hover:scale-105 transition-transform duration-300 shrink-0">
             {feature.icon}
           </div>
-          <h3 className="text-lg sm:text-xl font-bold text-white mb-2.5 sm:mb-3 tracking-tight group-hover:text-blue-100 transition-colors duration-300 truncate max-w-full">{feature.title}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-white mb-2.5 sm:mb-3 tracking-tight group-hover:text-blue-100 transition-colors duration-300 break-words max-w-full"></h3>
           <p className="text-xs sm:text-sm text-white/80 leading-relaxed group-hover:text-white transition-colors duration-300 font-medium">{feature.description}</p>
         </div>
       </div>
@@ -286,6 +288,16 @@ const HeroSectionComponent = () => {
 
       <HeroParticles />
 
+<<<<<<< HEAD
+=======
+
+     <div className="relative overflow-hidden" onMouseMove={handleMouseMove}>
+<div className="text-center lg:text-left"></div>
+<div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">          <div
+
+   ref={badgeRef}
+            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-slate-800/60 border border-blue-400/30 dark:border-blue-500/30 backdrop-blur-md mb-8 shadow-sm cursor-pointer transition-all duration-300"
+>>>>>>> 51a9dfc3 (Update frontend components)
       <div className="relative overflow-hidden w-full box-border" onMouseMove={handleMouseMove}>
         <motion.div variants={itemVariants} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 sm:pt-20 sm:pb-20 text-center w-full box-border">
           <div
@@ -316,7 +328,18 @@ const HeroSectionComponent = () => {
             Create, edit, and generate engaging multiple story variations from a single prompt.
             Perfect for writers, creators, and enthusiasts exploring the future of fiction.
           </p>
-          
+<<<<<<< HEAD
+
+=======
+
+          <div className="flex-grow flex flex-col items-center justify-center">
+            <div className="relative max-w-3xl w-full before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-r before:from-purple-500/20 before:via-indigo-500/20 before:to-blue-500/20 before:blur-xl before:animate-pulse">
+              <div className="flex flex-wrap items-center justify-center gap-4">
+
+                <Link to="/stories">
+                  <button className="relative px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold shadow-lg shadow-blue-500/25 dark:shadow-indigo-500/15 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer">
+                    <i className="fa fa-wand-magic-sparkles"></i>
+>>>>>>> 51a9dfc3 (Update frontend components)
           <div className="w-full box-border flex flex-col items-center justify-center">
             <div className="relative max-w-3xl w-full box-border">
               <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 select-none">
@@ -332,6 +355,10 @@ const HeroSectionComponent = () => {
                     <span>Collab Mode</span>
                   </button>
                 </Link>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 51a9dfc3 (Update frontend components)
               </div>
             </div>
           </div>
@@ -350,8 +377,17 @@ const HeroSectionComponent = () => {
         </div>
       </div>
 
+<<<<<<< HEAD
       <motion.div variants={itemVariants} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 w-full box-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 w-full box-border">
+=======
+            <motion.div
+        variants={itemVariants}
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 w-full box-border"
+      >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 w-full box-border">
+
+>>>>>>> 51a9dfc3 (Update frontend components)
           {features.map((feature, index) => (
             <FeatureCard feature={feature} key={index} />
           ))}
